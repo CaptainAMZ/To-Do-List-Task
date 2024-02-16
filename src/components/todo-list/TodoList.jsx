@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Box, Input, Button, Flex, useToast } from "@chakra-ui/react";
 import useLocalStorage from "../../hooks/useLocalStorage/useLocalStorage";
 import TodoItem from "../todo-item/ToDoItem";
+import Chart from "chart.js/auto";
+import { Bar } from "react-chartjs-2";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -84,8 +86,34 @@ const TodoList = () => {
 
   const toast = useToast();
 
+  const allTodosCount = todos.length;
+  const completedTodosCount = todos.filter((todo) => todo.completed).length;
+  const uncompletedTodosCount = allTodosCount - completedTodosCount;
+
+  const chartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
+  const chartData = {
+    labels: ["All Todos", "Completed Todos", "Uncompleted Todos"],
+    datasets: [
+      {
+        label: "Todos Count",
+        data: [allTodosCount, completedTodosCount, uncompletedTodosCount],
+        backgroundColor: ["blue", "green", "red"],
+      },
+    ],
+  };
+
   return (
-    <Flex w="100%" h="100%" p={8}>
+    <Flex w="100%" h="100%" p={8} flexWrap={"wrap"}>
+      <Box flex={1} mr={8}>
+        <Bar data={chartData} options={chartOptions} />
+      </Box>
       <Box flex={1}>
         <form style={{ display: "flex" }} onSubmit={handleSubmit}>
           <Input
