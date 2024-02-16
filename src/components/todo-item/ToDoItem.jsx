@@ -49,7 +49,7 @@ const TodoItem = ({ todo, toggleCompleted, editTodo, deleteTodo }) => {
       {isEditing ? (
         <form onSubmit={handleSubmit}>
           <Input value={editedTitle} onChange={handleChange} autoFocus mr={4} />
-          <Button type="submit" colorScheme="blue">
+          <Button marginY={"8px"} type="submit" colorScheme="blue">
             Save
           </Button>
         </form>

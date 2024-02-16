@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Input, Button, Flex, useToast } from "@chakra-ui/react";
+import { Box, Input, Button, Flex, useToast, Heading } from "@chakra-ui/react";
 import useLocalStorage from "../../hooks/useLocalStorage/useLocalStorage";
 import TodoItem from "../todo-item/ToDoItem";
 import Chart from "chart.js/auto";
@@ -104,39 +104,59 @@ const TodoList = () => {
       {
         label: "Todos Count",
         data: [allTodosCount, completedTodosCount, uncompletedTodosCount],
-        backgroundColor: ["blue", "green", "red"],
+        backgroundColor: [
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 99, 132, 0.2)",
+        ],
+        borderColor: [
+          "rgb(54, 162, 235)",
+          "rgb(153, 102, 255)",
+          "rgb(255, 99, 132)",
+        ],
       },
     ],
   };
 
   return (
-    <Flex w="100%" h="100%" p={8} flexWrap={"wrap"}>
-      <Box flex={1} mr={8}>
-        <Bar data={chartData} options={chartOptions} />
-      </Box>
-      <Box flex={1}>
-        <form style={{ display: "flex" }} onSubmit={handleSubmit}>
-          <Input
-            value={newTodoTitle}
-            onChange={handleChange}
-            placeholder="Enter a new todo"
-            mr={4}
-          />
-          <Button type="submit" colorScheme="blue">
-            Add
-          </Button>
-        </form>
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            toggleCompleted={toggleCompleted}
-            editTodo={editTodo}
-            deleteTodo={deleteTodo}
-          />
-        ))}
-      </Box>
-    </Flex>
+    <>
+      <Heading my={"12px"}>To Do List</Heading>
+      <Flex
+        p={8}
+        display={"flex"}
+        gap={"16px"}
+        flexWrap={"wrap"}
+        justifyContent={"start"}
+      >
+        <Box flex={1} display={"flex"} justifyContent={"center"} minW={"300px"} h={"fit-content"}>
+          <Bar data={chartData} options={chartOptions} />
+        </Box>
+        <Box flex={2} minW={"300px"}>
+          <form style={{ display: "flex" }} onSubmit={handleSubmit}>
+            <Input
+              value={newTodoTitle}
+              onChange={handleChange}
+              placeholder="Enter a new todo"
+              mr={4}
+            />
+            <Button type="submit" colorScheme="blue">
+              Add
+            </Button>
+          </form>
+          <Box paddingY={"12px"} maxH={"80vh"} overflowY={"auto"}>
+            {todos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                toggleCompleted={toggleCompleted}
+                editTodo={editTodo}
+                deleteTodo={deleteTodo}
+              />
+            ))}
+          </Box>
+        </Box>
+      </Flex>
+    </>
   );
 };
 
