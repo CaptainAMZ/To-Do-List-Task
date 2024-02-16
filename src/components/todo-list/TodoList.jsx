@@ -6,22 +6,13 @@ import Chart from "chart.js/auto";
 import { Bar } from "react-chartjs-2";
 
 const TodoList = () => {
-  const [todos, setTodos] = useState([]);
+  const { getUserData, setUserData } = useLocalStorage();
+  const [todos, setTodos] = useState(getUserData("todos") || []);
   const [newTodoTitle, setNewTodoTitle] = useState("");
 
-  const { getUserData, setUserData } = useLocalStorage();
-
   useEffect(() => {
-    const storedTodos = getUserData("todos");
-    if (storedTodos) {
-      setTodos(
-        storedTodos.map((todo) => ({
-          ...todo,
-          createdAt: new Date(todo.createdAt),
-        }))
-      );
-    }
-  }, []);
+    setUserData(todos, "todos");
+  }, [todos]);
 
   const handleChange = (e) => {
     setNewTodoTitle(e.target.value);
@@ -46,7 +37,6 @@ const TodoList = () => {
       createdAt: new Date(),
     };
     setTodos([...todos, newTodo]);
-    setUserData([...todos, newTodo], "todos");
     setNewTodoTitle("");
   };
 
@@ -60,7 +50,6 @@ const TodoList = () => {
         ...todos.slice(index + 1),
       ];
       setTodos(newTodos);
-      setUserData(newTodos, "todos");
     }
   };
 
@@ -74,14 +63,12 @@ const TodoList = () => {
         ...todos.slice(index + 1),
       ];
       setTodos(newToDos);
-      setUserData(newToDos, "todos");
     }
   };
 
   const deleteTodo = (id) => {
     const newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
-    setUserData(newTodos, "todos");
   };
 
   const toast = useToast();
@@ -127,11 +114,17 @@ const TodoList = () => {
         gap={"16px"}
         flexWrap={"wrap"}
         justifyContent={"start"}
+        w={"100%"}
       >
-        <Box flex={1} display={"flex"} justifyContent={"center"} minW={"300px"} h={"fit-content"}>
+        <Box
+          flex={1}
+          display={"flex"}
+          justifyContent={"center"}
+          h={"fit-content"}
+        >
           <Bar data={chartData} options={chartOptions} />
         </Box>
-        <Box flex={2} minW={"300px"}>
+        <Box flex={1}>
           <form style={{ display: "flex" }} onSubmit={handleSubmit}>
             <Input
               value={newTodoTitle}
