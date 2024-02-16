@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Input, Button, Flex, useToast } from "@chakra-ui/react";
+import useLocalStorage from "../../hooks/useLocalStorage/useLocalStorage";
+import TodoItem from "../todo-item/ToDoItem";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [newTodoTitle, setNewTodoTitle] = useState("");
+
+  const { getUserData, setUserData } = useLocalStorage();
+
+  useEffect(() => {
+    const storedTodos = getUserData("todos");
+    if (storedTodos) {
+      setTodos(
+        storedTodos.map((todo) => ({
+          ...todo,
+          createdAt: new Date(todo.createdAt),
+        }))
+      );
+    }
+  }, []);
 
   const handleChange = (e) => {
     setNewTodoTitle(e.target.value);
@@ -28,6 +44,7 @@ const TodoList = () => {
       createdAt: new Date(),
     };
     setTodos([...todos, newTodo]);
+    setUserData([...todos, newTodo], "todos");
     setNewTodoTitle("");
   };
 
@@ -35,7 +52,13 @@ const TodoList = () => {
     const index = todos.findIndex((todo) => todo.id === id);
     if (index !== -1) {
       const newTodo = { ...todos[index], completed: !todos[index].completed };
-      setTodos([...todos.slice(0, index), newTodo, ...todos.slice(index + 1)]);
+      const newTodos = [
+        ...todos.slice(0, index),
+        newTodo,
+        ...todos.slice(index + 1),
+      ];
+      setTodos(newTodos);
+      setUserData(newTodos, "todos");
     }
   };
 
@@ -43,12 +66,20 @@ const TodoList = () => {
     const index = todos.findIndex((todo) => todo.id === id);
     if (index !== -1) {
       const newTodo = { ...todos[index], title: newTitle };
-      setTodos([...todos.slice(0, index), newTodo, ...todos.slice(index + 1)]);
+      const newToDos = [
+        ...todos.slice(0, index),
+        newTodo,
+        ...todos.slice(index + 1),
+      ];
+      setTodos(newToDos);
+      setUserData(newToDos, "todos");
     }
   };
 
   const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(newTodos);
+    setUserData(newTodos, "todos");
   };
 
   const toast = useToast();
@@ -68,7 +99,7 @@ const TodoList = () => {
           </Button>
         </form>
         {todos.map((todo) => (
-          <ToDoItem
+          <TodoItem
             key={todo.id}
             todo={todo}
             toggleCompleted={toggleCompleted}
