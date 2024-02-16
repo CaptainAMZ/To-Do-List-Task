@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Input, Button, Flex, useToast, Heading } from "@chakra-ui/react";
 import useLocalStorage from "../../hooks/useLocalStorage/useLocalStorage";
 import TodoItem from "../todo-item/ToDoItem";
@@ -9,6 +9,8 @@ const TodoList = () => {
   const { getUserData, setUserData } = useLocalStorage();
   const [todos, setTodos] = useState(getUserData("todos") || []);
   const [newTodoTitle, setNewTodoTitle] = useState("");
+
+  const toast = useToast();
 
   useEffect(() => {
     setUserData(todos, "todos");
@@ -40,65 +42,71 @@ const TodoList = () => {
     setNewTodoTitle("");
   };
 
-  const toggleCompleted = (id) => {
-    const index = todos.findIndex((todo) => todo.id === id);
-    if (index !== -1) {
-      const newTodo = { ...todos[index], completed: !todos[index].completed };
-      const newTodos = [
-        ...todos.slice(0, index),
-        newTodo,
-        ...todos.slice(index + 1),
-      ];
+  const toggleCompleted = useCallback(
+    (id) => {
+      const index = todos.findIndex((todo) => todo.id === id);
+      if (index !== -1) {
+        const newTodos = [...todos];
+        newTodos[index].completed = !newTodos[index].completed;
+        setTodos(newTodos);
+      }
+    },
+    [todos]
+  );
+  const editTodo = useCallback(
+    (id, newTitle) => {
+      const index = todos.findIndex((todo) => todo.id === id);
+      if (index !== -1) {
+        const newTodo = { ...todos[index], title: newTitle };
+        const newToDos = [
+          ...todos.slice(0, index),
+          newTodo,
+          ...todos.slice(index + 1),
+        ];
+        setTodos(newToDos);
+      }
+    },
+    [todos]
+  );
+
+  const deleteTodo = useCallback(
+    (id) => {
+      const newTodos = todos.filter((todo) => todo.id !== id);
       setTodos(newTodos);
-    }
-  };
-
-  const editTodo = (id, newTitle) => {
-    const index = todos.findIndex((todo) => todo.id === id);
-    if (index !== -1) {
-      const newTodo = { ...todos[index], title: newTitle };
-      const newToDos = [
-        ...todos.slice(0, index),
-        newTodo,
-        ...todos.slice(index + 1),
-      ];
-      setTodos(newToDos);
-    }
-  };
-
-  const deleteTodo = (id) => {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
-  };
-
-  const toast = useToast();
+    },
+    [todos]
+  );
 
   const allTodosCount = todos.length;
   const completedTodosCount = todos.filter((todo) => todo.completed).length;
   const uncompletedTodosCount = allTodosCount - completedTodosCount;
 
-  const chartOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
+  const chartOptions = useMemo(() => {
+    return {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
       },
-    },
-  };
+    };
+  }, []);
 
-  const chartData = {
-    labels: ["All Todos", "Completed Todos", "Uncompleted Todos"],
-    datasets: [
-      {
-        label: "Todos Count",
-        data: [allTodosCount, completedTodosCount, uncompletedTodosCount],
-        backgroundColor: [
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 99, 132, 0.2)",
-        ],
-      },
-    ],
-  };
+  const chartData = useMemo(() => {
+    return {
+      labels: ["All Todos", "Completed Todos", "Uncompleted Todos"],
+      datasets: [
+        {
+          label: "Todos Count",
+          data: [allTodosCount, completedTodosCount, uncompletedTodosCount],
+          backgroundColor: [
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(153, 102, 255, 0.2)",
+            "rgba(255, 99, 132, 0.2)",
+          ],
+        },
+      ],
+    };
+  }, [allTodosCount, completedTodosCount, uncompletedTodosCount]);
 
   return (
     <>

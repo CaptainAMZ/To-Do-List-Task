@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import {
   Box,
   Input,
@@ -14,6 +14,8 @@ import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 const TodoItem = ({ todo, toggleCompleted, editTodo, deleteTodo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
+
+  console.log("To Do Item");
 
   const handleChange = (e) => {
     setEditedTitle(e.target.value);
@@ -89,4 +91,4 @@ const TodoItem = ({ todo, toggleCompleted, editTodo, deleteTodo }) => {
   );
 };
 
-export default TodoItem;
+export default memo(TodoItem);
