@@ -83,7 +83,7 @@ const TodoItem = ({ todo, toggleCompleted, editTodo, deleteTodo }) => {
         </Flex>
       )}
       <Text fontSize="sm" color="gray.500" mt={2}>
-        Created at: {todo.createdAt.toLocaleString()}
+        Created at: {new Date(todo.createdAt).toLocaleString()}
       </Text>
     </Box>
   );
