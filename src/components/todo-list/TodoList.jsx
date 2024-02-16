@@ -67,9 +67,15 @@ const TodoList = () => {
             Add
           </Button>
         </form>
-        {/* {todos.map((todo) => (
-         // Todo Component
-        ))} */}
+        {todos.map((todo) => (
+          <ToDoItem
+            key={todo.id}
+            todo={todo}
+            toggleCompleted={toggleCompleted}
+            editTodo={editTodo}
+            deleteTodo={deleteTodo}
+          />
+        ))}
       </Box>
     </Flex>
   );
